@@ -2,11 +2,16 @@ package philosopher;
 
 import fork.Fork;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Philosopher implements Runnable {
 
 	private Fork rightFork;
 	private Fork leftFork;
 	private Integer position;
+
+	private static Logger logger = LogManager.getLogger();
 	
 	public Philosopher (Fork _leftFork, Fork _rightFork, Integer _position) {
 		this.rightFork = _rightFork;
@@ -16,26 +21,37 @@ public class Philosopher implements Runnable {
 	
 	public void run(){
 				while(true) {
-					synchronized(leftFork) {
-						leftFork.Hold();
-						System.out.println("Phil " + position + " picked up leftFork " + leftFork.position);
-						synchronized(rightFork) {
-							rightFork.Hold();
-							System.out.println("Phil " + position + " picked up rightFork " + rightFork.position);
-						}
-					}
+					
 					//The think as they eat and before/after they eat
 					Think();
+					
+					synchronized(leftFork) {
+						leftFork.Hold();
+						logger.info("Philosopher " + position + " picked up leftFork " + leftFork.position);
+						synchronized(rightFork) {
+							rightFork.Hold();
+							logger.info("Philosopher " + position + " picked up rightFork " + rightFork.position);
+						
+						
+							if(leftFork.inUse && rightFork.inUse) {
+								Eat();
+							}
+						}
+					}				
 				}
 	}
 	
 	public void Think() {
 		try {
-			System.out.println("Thinker is thinking...");
-			Thread.sleep(2000);
+			logger.info("Philosopher " + position + " is thinking...");
+			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn("Philosopher " + position + " was interrupted.");
 		}
+	}
+	
+	public void Eat() {
+		logger.info("Philosopher " + position + " is eating.");
 	}
 }
