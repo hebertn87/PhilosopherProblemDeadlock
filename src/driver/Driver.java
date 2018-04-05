@@ -6,7 +6,7 @@ import philosopher.Philosopher;
 public class Driver {
 	public static void main(String[] args) {
 		
-		//Create an array of forks and an array of phils
+		//Create an array of forks and an array of philosophers
 		Fork[] forks = new Fork[5];
 		Philosopher[] thinker = new Philosopher[5];
 		
@@ -26,7 +26,10 @@ public class Driver {
 			Fork leftFork = forks[i];
 			Fork rightFork = forks[(i + 1) % forks.length];
 			
+			//This line creates a deadlock
 			thinker[i] = new Philosopher(leftFork, rightFork, i);
+			
+			//Then we create the thread and start
 			Thread myThread = new Thread(thinker[i]);
 			myThread.start();
 		}
